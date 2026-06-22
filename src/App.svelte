@@ -352,7 +352,7 @@
 	}
 
 	.modal-backdrop {
-		position: absolute;
+		position: fixed;
 		inset: 0;
 		width: 100%;
 		height: 100%;
@@ -396,6 +396,21 @@
 			align-items: center;
 			justify-content: center;
 		}
+
+		.modal-layer {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: flex-start;
+			overflow-y: auto;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		.modal-shell {
+			width: 100%;
+			height: auto;
+			margin: auto;
+		}
 	}
 
 	@media (max-width: 720px) {
@@ -414,13 +429,7 @@
 		}
 
 		.modal-layer {
-			align-items: stretch;
 			padding: 0;
-		}
-
-		.modal-shell {
-			width: 100%;
-			height: 100vh;
 		}
 
 		.workspace {

@@ -7,6 +7,13 @@
 
 	let imageFailed = false;
 
+	const variantLabels: Record<string, string> = {
+		normal: "Normal",
+		holo: "Holo",
+		reverse: "Reverse",
+	};
+
+	$: variantLabel = variantLabels[card.variant] ?? card.variant;
 	$: price = card.price?.toLocaleString(undefined, {
 		style: "currency",
 		currency: "USD",
@@ -43,9 +50,10 @@
 					<span class="card-number">{card.number}</span>
 				{/if}
 			</p>
-			<p class="attribute-line">{card.condition} * {card.variant}</p>
+			<p class="attribute-line">{variantLabel}</p>
 		</div>
 		<div class="chips" aria-label="Card attributes">
+			<span>{card.condition}</span>
 			{#if price}
 				<span>{price}</span>
 			{/if}
@@ -56,6 +64,7 @@
 <style lang="postcss">
 	.card-tile {
 		display: grid;
+		grid-template-rows: minmax(0, 1fr) auto;
 		gap: 12px;
 		min-width: 0;
 		height: 336px;
@@ -88,7 +97,8 @@
 	.image-frame {
 		display: grid;
 		place-items: center;
-		min-height: 210px;
+		min-height: 0;
+		height: 100%;
 		overflow: hidden;
 		border-radius: 4px;
 		background: #f2f4f7;
@@ -96,14 +106,15 @@
 
 	.image-frame img {
 		width: 100%;
-		height: 210px;
+		height: 100%;
 		object-fit: contain;
 	}
 
 	.image-fallback {
 		display: grid;
 		place-items: center;
-		min-height: 210px;
+		width: 100%;
+		height: 100%;
 		padding: 16px;
 		color: #667085;
 		text-align: center;
@@ -165,7 +176,7 @@
 	}
 
 	.attribute-line {
-		text-transform: uppercase;
+		text-transform: capitalize;
 	}
 
 	.chips {
