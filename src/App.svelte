@@ -164,6 +164,7 @@
 	:global(body),
 	:global(#app) {
 		height: 100%;
+		overflow: hidden;
 	}
 
 	:global(*) {
@@ -172,7 +173,6 @@
 
 	:global(body) {
 		min-width: 320px;
-		min-height: 100vh;
 		margin: 0;
 	}
 
@@ -233,6 +233,7 @@
 	.app-shell {
 		width: 100%;
 		height: 100vh;
+		height: 100dvh;
 		margin: 0 auto;
 		padding: 0;
 		display: grid;
@@ -298,8 +299,8 @@
 	}
 
 	.workspace {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr);
+		display: flex;
+		flex-direction: column;
 		width: min(var(--page-max-width), calc(100vw - 32px));
 		min-height: 0;
 		margin: 18px auto 0;
@@ -312,6 +313,7 @@
 	}
 
 	.list-panel {
+		flex: 1;
 		min-width: 0;
 		min-height: 0;
 		display: flex;
