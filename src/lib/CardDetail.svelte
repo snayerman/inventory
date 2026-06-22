@@ -14,6 +14,11 @@
 	}
 
 	$: subtitle = card ? (card.set ? `${card.set} · ${card.number}` : card.number) : "";
+
+	$: price = card?.price?.toLocaleString(undefined, {
+		style: "currency",
+		currency: "USD",
+	});
 </script>
 
 <section class="detail-panel" aria-label="Selected card details">
@@ -27,6 +32,10 @@
 		</div>
 
 		<div class="detail-meta">
+			{#if price}
+				<span>{price}</span>
+			{/if}
+
 			<span>{card.variant}</span>
 			<span>{card.condition}</span>
 			{#if card.language}
