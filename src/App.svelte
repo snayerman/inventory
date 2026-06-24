@@ -1,14 +1,17 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { onDestroy, onMount } from "svelte";
 	import CardDetail from "./lib/CardDetail.svelte";
 	import CardGrid from "./lib/CardGrid.svelte";
 	import { loadPokemonCards } from "./lib/data";
-	import { searchCards } from "./lib/search";
+	import { createCardSearcher } from "./lib/search";
 	import { cardConditions, cardVariants, type PokemonCard } from "./lib/types";
 
 	let cards: PokemonCard[] = [];
 	let selectedId: string | undefined;
 	let query = "";
+	let debouncedQuery = "";
+	let debounceSource = "";
+	let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 	let variant = "all";
 	let condition = "all";
 	let language = "all";
@@ -26,15 +29,33 @@
 		}
 	});
 
+	onDestroy(() => {
+		if (debounceTimer) {
+			clearTimeout(debounceTimer);
+		}
+	});
+
 	$: languages = Array.from(new Set(cards.map((card) => card.language))).sort((a, b) => a.localeCompare(b));
-	$: filteredByControls = cards.filter((card) => {
+	$: if (query !== debounceSource) {
+		debounceSource = query;
+		if (debounceTimer) {
+			clearTimeout(debounceTimer);
+		}
+
+		const nextQuery = query;
+		debounceTimer = setTimeout(() => {
+			debouncedQuery = nextQuery;
+		}, 150);
+	}
+	$: searcher = createCardSearcher(cards);
+	$: queryMatched = searcher.search(debouncedQuery);
+	$: filteredCards = queryMatched.filter((card) => {
 		const matchesVariant = variant === "all" || card.variant === variant;
 		const matchesCondition = condition === "all" || card.condition === condition;
 		const matchesLanguage = language === "all" || card.language === language;
 
 		return matchesVariant && matchesCondition && matchesLanguage;
 	});
-	$: filteredCards = searchCards(filteredByControls, query);
 
 	$: selectedCard = cards.find((card) => card.id === selectedId);
 
@@ -43,7 +64,13 @@
 	}
 
 	function resetFilters() {
+		if (debounceTimer) {
+			clearTimeout(debounceTimer);
+		}
+
 		query = "";
+		debouncedQuery = "";
+		debounceSource = "";
 		variant = "all";
 		condition = "all";
 		language = "all";
